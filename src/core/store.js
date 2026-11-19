@@ -269,6 +269,11 @@ const store = {
     if (!s.engine.locale || (s.language !== 'zh' && s.engine.locale === 'zh-CN' && !s.engine._localeExplicit)) {
       s.engine.locale = 'auto';
     }
+    // 0.6.2 多语言迁移：如果非中文界面且未显式开启中文输入法，默认输入法为系统原生键盘（避免打字变成中文拼音）
+    if (s.language !== 'zh' && s.engine.locale !== 'zh-CN' && !s.engine._chineseImeExplicit) {
+      s.engine.chineseIme = false;
+      s.engine.chineseImeDefault = false;
+    }
     /**
      * 0.5.6 起没有第三方底座了：老配置里的 mode=mumu / fydeos / attach，
      * 或者手改出来的任何其它值，一律当 builtin 处理，并把残留的第三方字段删掉。

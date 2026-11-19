@@ -846,6 +846,7 @@ function bindAndroid() {
   $('btnAndroidDisplay').addEventListener('click', () => open('display'));
   $('btnAndroidSound').addEventListener('click', () => open('sound'));
   $('btnAndroidLocale').addEventListener('click', () => open('locale'));
+  if ($('btnAndroidKeyboard')) $('btnAndroidKeyboard').addEventListener('click', () => open('keyboard'));
   $('btnAndroidApps').addEventListener('click', () => open('apps'));
 }
 
@@ -1737,7 +1738,7 @@ function bindSettings() {
   }
   if ($('setChineseIme')) {
     $('setChineseIme').addEventListener('change', async (e) => {
-      state.settings = await api.setSettings({ engine: { chineseIme: e.target.checked } });
+      state.settings = await api.setSettings({ engine: { chineseIme: e.target.checked, _chineseImeExplicit: true } });
       toast({
         title: e.target.checked ? t('toast.chineseImeEnabled') : t('toast.chineseImeDisabled'),
         body: t('toast.systemLangUpdatedBody'),

@@ -1146,6 +1146,34 @@ class AdbClient {
     return this.ensureSystemLocale(locale);
   }
 
+  /**
+   * 确保系统的默认输入法符合当前语言偏好。
+   * 中文环境使用谷歌拼音输入法（PinyinIME）；
+   * 英文/阿拉伯语/非中文环境使用原生 AOSP 输入法（LatinIME），避免物理键盘打字变成中文拼音。
+   */
+  async ensureDefaultIme(locale = 'en-US') {
+    const isChinese = String(locale).toLowerCase().startsWith('zh');
+    const PINYIN_ID = 'com.android.inputmethod.pinyin/.PinyinIME';
+    const LATIN_ID = 'com.android.inputmethod.latin/.LatinIME';
+    if (isChinese) {
+      const cmds = [
+        `ime enable ${PINYIN_ID}`,
+        `settings put secure default_input_method ${PINYIN_ID}`,
+        `ime set ${PINYIN_ID}`,
+      ];
+      await this.shell(cmds.join(' ; '), { timeout: 12000 }).catch(() => '');
+    } else {
+      const cmds = [
+        `ime enable ${LATIN_ID}`,
+        `settings put secure default_input_method ${LATIN_ID}`,
+        `ime set ${LATIN_ID}`,
+        `ime disable ${PINYIN_ID}`,
+      ];
+      await this.shell(cmds.join(' ; '), { timeout: 12000 }).catch(() => '');
+    }
+    return true;
+  }
+
   /** 当前逻辑分辨率（横屏切换后窗口要按它算宽高比） */
   async displaySize() {
     try {

@@ -1719,13 +1719,23 @@ function registerIpc() {
       refreshTrayMenu();
       send('i18n:change', patch.language);
     }
-    if ((patch && patch.language) || (patch && patch.engine && patch.engine.locale)) {
+    if (
+      (patch && patch.language) ||
+      (patch && patch.engine && ('locale' in patch.engine || 'chineseIme' in patch.engine))
+    ) {
       try {
         if (runtime && runtime.emuRunning) {
           const client = runtime.client?.();
           if (client) {
             const targetLocale = runtime.resolveLocale();
             client.shell(`settings put system system_locales ${targetLocale}`).catch(() => {});
+            const wantChinese = next?.engine?.chineseIme === true
+              || (next?.engine?.chineseIme !== false && targetLocale.toLowerCase().startsWith('zh'));
+            if (wantChinese) {
+              client.ensureDefaultIme('zh-CN').catch(() => {});
+            } else {
+              client.ensureDefaultIme('en-US').catch(() => {});
+            }
           }
         }
       } catch (_) {}

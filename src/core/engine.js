@@ -683,7 +683,9 @@ class Runtime {
           if (r && r.ok) this._chineseReady = true;
           this.log(`输入法配置：${r.ok ? (r.installed ? '已安装并启用' : '已就绪') : (r.reason || '未就绪')}`);
         } else {
+          await client.ensureDefaultIme('en-US');
           this._chineseReady = true;
+          this.log(`输入法配置：已恢复系统原生键盘 (LatinIME)`);
         }
 
         // -change-locale 只在「全量引导」时执行并重启 framework；从 quickboot 快照
