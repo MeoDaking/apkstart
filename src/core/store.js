@@ -35,6 +35,7 @@ const APPS_FILE = path.join(DATA_DIR, 'apps.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
 const DEFAULT_SETTINGS = {
+  language: 'en',
   adbPath: '',
   device: '127.0.0.1:5555',
   /**
@@ -264,6 +265,7 @@ const store = {
 
   getSettings() {
     const s = deepMerge(DEFAULT_SETTINGS, readJson(SETTINGS_FILE, {}));
+    s.language = ['en', 'ar', 'zh'].includes(s.language) ? s.language : 'en';
     /**
      * 0.5.6 起没有第三方底座了：老配置里的 mode=mumu / fydeos / attach，
      * 或者手改出来的任何其它值，一律当 builtin 处理，并把残留的第三方字段删掉。
