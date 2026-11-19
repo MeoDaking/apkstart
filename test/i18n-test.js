@@ -71,4 +71,12 @@ test('[store] 语言配置持久化', async (t) => {
     store.saveSettings({ language: 'en' });
     assert.equal(store.getSettings().language, 'en');
   });
+
+  await t.test('模拟器系统语言跟随应用语言 (auto 解析)', () => {
+    assert.equal(store.resolveLocale('auto', 'en'), 'en-US');
+    assert.equal(store.resolveLocale('auto', 'ar'), 'ar');
+    assert.equal(store.resolveLocale('auto', 'zh'), 'zh-CN');
+    assert.equal(store.resolveLocale('ja-JP', 'en'), 'ja-JP');
+    assert.equal(store.resolveLocale('', 'en'), 'en-US');
+  });
 });

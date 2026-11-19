@@ -1090,11 +1090,11 @@ function fillSettings(s) {
   syncBackendFields();
   refreshDrivers().catch(() => {});
   if ($('setLanguage')) $('setLanguage').value = s.language || 'en';
-  $('setAdbPath').value = s.adbPath || '';
-  $('setSystemImage').value = s.runtime.isoPath || '';
-  $('setMemory').value = s.engine.memoryMB;
-  $('setCores').value = s.engine.cores;
-  $('setIdle').value = s.engine.idleShutdownMinutes;
+  if ($('setAdbPath')) $('setAdbPath').value = s.adbPath || '';
+  if ($('setSystemImage')) $('setSystemImage').value = (s.runtime && s.runtime.isoPath) || '';
+  if ($('setMemory')) $('setMemory').value = (s.engine && s.engine.memoryMB) || '';
+  if ($('setCores')) $('setCores').value = (s.engine && s.engine.cores) || '';
+  if ($('setIdle')) $('setIdle').value = (s.engine && s.engine.idleShutdownMinutes) || '';
   if ($('setSourcePref')) $('setSourcePref').value = (s.runtime && s.runtime.sourcePreference) || 'auto';
   if ($('setAutoMirror')) $('setAutoMirror').checked = (s.runtime && s.runtime.autoMirror) !== false;
   if ($('setGiteeToken')) $('setGiteeToken').value = (s.runtime && s.runtime.giteeToken) || '';
@@ -1124,7 +1124,7 @@ function fillSettings(s) {
   if ($('setRenderSize')) $('setRenderSize').value = eng.renderSize || 'auto';
   if ($('setDataGB')) $('setDataGB').value = String(Number(eng.dataPartitionGB || 0));
   if ($('setFastDns')) $('setFastDns').checked = eng.fastDns !== false;
-  if ($('setLocale')) $('setLocale').value = eng.locale || 'zh-CN';
+  if ($('setLocale')) $('setLocale').value = eng.locale || 'auto';
   if ($('setChineseIme')) $('setChineseIme').checked = eng.chineseIme !== false;
   if ($('setKeepSnapshot')) $('setKeepSnapshot').checked = eng.keepSnapshot !== false;
   $('setDisplayMode').value = d.mode === 'fullscreen' ? 'fullscreen' : 'window';
@@ -1639,6 +1639,10 @@ function bindSettings() {
       const lang = e.target.value;
       await save({ language: lang });
       applyLanguage(lang);
+      const engLocale = state.settings?.engine?.locale || 'auto';
+      if (engLocale === 'auto') {
+        toast({ title: t('toast.systemLangUpdated'), body: t('toast.systemLangUpdatedBody'), type: 'ok' });
+      }
     });
   }
 
@@ -1727,7 +1731,7 @@ function bindSettings() {
   }
   if ($('setLocale')) {
     $('setLocale').addEventListener('change', async (e) => {
-      state.settings = await api.setSettings({ engine: { locale: e.target.value } });
+      state.settings = await api.setSettings({ engine: { locale: e.target.value, _localeExplicit: true } });
       toast({ title: t('toast.systemLangUpdated'), body: t('toast.systemLangUpdatedBody'), type: 'ok' });
     });
   }

@@ -997,8 +997,8 @@ const { AdbClient, friendlyInstallError, friendlyLaunchError } = require('../src
     assert(!/-prop[\s\S]{0,80}persist\.sys\.locale/.test(emuCode),
       '不能再用无效的 -prop persist.sys.locale');
     assert(/_guestLocale/.test(emuJs), '要有可配置的语言来源');
-    // 默认中文
-    assert(/locale:\s*'zh-CN'/.test(storeJs), '默认语言必须是简体中文');
+    // 默认语言（auto 跟随应用语言或 zh-CN）
+    assert(/locale:\s*'(auto|zh-CN)'/.test(storeJs), '默认语言必须是 auto 或 zh-CN');
     assert(/chineseIme:\s*true/.test(storeJs), '默认开启中文输入法');
 
     // 输入法：随包带 APK、开机装好并启用

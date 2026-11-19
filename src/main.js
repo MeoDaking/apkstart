@@ -1719,6 +1719,17 @@ function registerIpc() {
       refreshTrayMenu();
       send('i18n:change', patch.language);
     }
+    if ((patch && patch.language) || (patch && patch.engine && patch.engine.locale)) {
+      try {
+        if (runtime && runtime.emuRunning) {
+          const client = runtime.client?.();
+          if (client) {
+            const targetLocale = runtime.resolveLocale();
+            client.shell(`settings put system system_locales ${targetLocale}`).catch(() => {});
+          }
+        }
+      } catch (_) {}
+    }
     if (patch && patch.autoStart !== undefined) applyAutoStart();
     if (patch && patch.display && appWin && appWin.isOpen) {
       // 竖屏基准尺寸变了：只影响后续打开的窗口大小，不打断正在跑的应用
